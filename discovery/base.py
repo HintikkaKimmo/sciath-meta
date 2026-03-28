@@ -26,7 +26,7 @@ class ArtifactBundle:
     yocto_distro: str = ""
     kernel_version: str = ""
     build_system: str = ""
-    metadata: dict = field(default_factory=dict)
+    metadata: dict[str, str] = field(default_factory=dict)
 
     @property
     def has_sbom(self) -> bool:

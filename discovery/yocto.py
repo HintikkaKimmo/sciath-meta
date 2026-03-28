@@ -9,7 +9,6 @@ Walks a Yocto build tree (BUILDDIR) and collects:
 - PACKAGECONFIG per recipe (from bitbake environment)
 """
 
-import glob
 import logging
 import re
 import subprocess
