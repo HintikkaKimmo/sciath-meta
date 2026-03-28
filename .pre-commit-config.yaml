@@ -26,7 +26,7 @@ repos:
     hooks:
       - id: ruff
         name: ruff
-        entry: ruff check
+        entry: uv run ruff check
         language: system
         types: [python]
         pass_filenames: true
@@ -36,13 +36,13 @@ repos:
     hooks:
       - id: pytest
         name: pytest
-        entry: pytest
+        entry: uv run pytest
         language: system
         pass_filenames: false
         always_run: true
       - id: mypy
         name: mypy
-        entry: mypy discovery/
+        entry: uv run mypy discovery/
         language: system
         pass_filenames: false
         always_run: true

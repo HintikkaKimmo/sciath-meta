@@ -1,0 +1,110 @@
+# Release workflow: package sciath-meta and publish signed GitHub Release.
+#
+# Triggered by: push of a tag matching v* (e.g. v0.1.0)
+#
+# Security:
+#   - Sigstore cosign signs each release artifact (keyless, GitHub OIDC)
+#   - SLSA Level 2 provenance via actions/attest-build-provenance
+#   - CycloneDX SBOM for the discovery Python module
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies (hash-verified)
+        run: uv sync --frozen --extra dev
+
+      - name: Test
+        run: uv run pytest tests/ -v
+
+      - name: Audit dependencies
+        run: uv run pip-audit
+
+  release:
+    name: Publish Release
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Determine version from tag
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+
+      - name: Package tarball
+        run: |
+          ARCHIVE="sciath-meta-${VERSION}.tar.gz"
+          tar -czf "${ARCHIVE}" \
+            --exclude='.git' \
+            --exclude='__pycache__' \
+            --exclude='.pytest_cache' \
+            --exclude='.mypy_cache' \
+            --exclude='.ruff_cache' \
+            .
+          echo "ARCHIVE=${ARCHIVE}" >> $GITHUB_ENV
+
+      - name: Generate SBOM (discovery module)
+        run: |
+          uv sync --frozen
+          uv run pip install cyclonedx-bom
+          uv run cyclonedx-py environment --output-format json \
+            --outfile "sciath-meta-${VERSION}.sbom.cdx.json"
+
+      - name: Generate checksums
+        run: |
+          sha256sum "${ARCHIVE}" "sciath-meta-${VERSION}.sbom.cdx.json" > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign artifacts with Sigstore
+        run: |
+          for f in "${ARCHIVE}" "sciath-meta-${VERSION}.sbom.cdx.json" SHA256SUMS.txt; do
+            cosign sign-blob --yes --bundle "${f}.bundle" "${f}"
+          done
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: ${{ env.ARCHIVE }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.ARCHIVE }}
+            ${{ env.ARCHIVE }}.bundle
+            sciath-meta-${{ env.VERSION }}.sbom.cdx.json
+            sciath-meta-${{ env.VERSION }}.sbom.cdx.json.bundle
+            SHA256SUMS.txt
+            SHA256SUMS.txt.bundle
+          generate_release_notes: true
+          fail_on_unmatched_files: true
