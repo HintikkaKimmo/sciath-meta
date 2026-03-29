@@ -167,6 +167,17 @@ mypy discovery/
   Yocto, post-build hook for Buildroot, dpkg trigger for Debian). Don't fight the
   build system.
 
+## CHANGELOG and VERSION — update on every commit
+
+**Every commit that changes functionality must update `CHANGELOG.md`.**
+
+- Add a bullet under `## [Unreleased]` in the appropriate section (`Added`, `Changed`, `Fixed`).
+- Use the same voice as existing entries: bold lead phrase, then one-sentence description.
+- `VERSION` is only bumped when cutting a release, not on every commit.
+
+**Exceptions:** Pure docs changes, CI config tweaks, and dependency-only updates
+do not need a CHANGELOG entry.
+
 ## Relationship to other repos
 
 | Repo | What it is | When to look there |
