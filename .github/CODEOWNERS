@@ -1,0 +1,3 @@
+# Security-critical paths require owner review
+.github/                        @HintikkaKimmo
+meta-sciath/classes/sciath.bbclass @HintikkaKimmo
