@@ -10,6 +10,7 @@ Walks a Yocto build tree (BUILDDIR) and collects:
 """
 
 import logging
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -138,7 +139,10 @@ class YoctoDiscovery(BuildSystemDiscovery):
         dtbs = list(image_dir.glob("*.dtb"))
         # Also check for .dts source files
         dtbs.extend(image_dir.glob("*.dts"))
-        return dtbs[:20]  # Cap at 20 DTBs
+        # Cap DTB count to prevent excessive upload size. Most boards have 1-5 DTBs;
+        # 20 covers multi-board images. Override via SCIATH_MAX_DTBS env var.
+        max_dtbs = int(os.environ.get("SCIATH_MAX_DTBS", "20"))
+        return dtbs[:max_dtbs]
 
     def _find_busybox_config(self, tmp_dir: Path) -> Optional[Path]:
         """Find busybox .config from work directory."""
@@ -161,10 +165,14 @@ class YoctoDiscovery(BuildSystemDiscovery):
         This is expensive (~2s per recipe) so we only check recipes
         that have Sciath filter rules (openssl, curl, busybox, etc.).
         """
-        target_recipes = [
-            "openssl", "curl", "busybox", "dbus", "systemd",
-            "gstreamer1.0", "ffmpeg", "bluez5", "wpa-supplicant",
-        ]
+        env_recipes = os.environ.get("SCIATH_PACKAGECONFIG_RECIPES")
+        if env_recipes:
+            target_recipes = [r.strip() for r in env_recipes.split(",") if r.strip()]
+        else:
+            target_recipes = [
+                "openssl", "curl", "busybox", "dbus", "systemd",
+                "gstreamer1.0", "ffmpeg", "bluez5", "wpa-supplicant",
+            ]
 
         configs: dict[str, list[str]] = {}
         for recipe in target_recipes:

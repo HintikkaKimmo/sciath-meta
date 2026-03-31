@@ -26,6 +26,7 @@ class ArtifactBundle:
     yocto_distro: str = ""
     kernel_version: str = ""
     build_system: str = ""
+    schema_version: str = "1.0"
     metadata: dict[str, str] = field(default_factory=dict)
 
     @property

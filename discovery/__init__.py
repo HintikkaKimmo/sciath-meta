@@ -23,6 +23,8 @@ def auto_discover(build_dir: str, build_system: str = "") -> ArtifactBundle:
     from pathlib import Path
 
     path = Path(build_dir).resolve()
+    if not path.is_absolute():
+        raise ValueError(f"build_dir must be an absolute path, got: {build_dir}")
     if not path.is_dir():
         raise FileNotFoundError(f"Build directory not found: {build_dir}")
 

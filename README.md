@@ -34,6 +34,23 @@ Results are written to `${DEPLOY_DIR_IMAGE}/sciath_scan_id` and
 | Debian | Planned | `debian/` |
 | OpenWrt | Planned | `openwrt/` |
 
+## Configuration
+
+### Required (in Yocto `local.conf`)
+
+| Variable | Description |
+|----------|-------------|
+| `SCIATH_ENABLED` | Set to `"1"` to enable scanning (disabled by default) |
+| `SCIATH_API_KEY` | Your Sciath API key |
+| `SCIATH_PROJECT` | Project name in Sciath |
+
+### Optional (environment variables)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SCIATH_PACKAGECONFIG_RECIPES` | `openssl,curl,busybox,...` (9 recipes) | Comma-separated list of recipes to extract PACKAGECONFIG from |
+| `SCIATH_MAX_DTBS` | `20` | Maximum number of DTB files to collect |
+
 ## Requirements
 
 - [sciath-cli](https://github.com/HintikkaKimmo/sciath-cli) installed (`pip install sciath-cli`)

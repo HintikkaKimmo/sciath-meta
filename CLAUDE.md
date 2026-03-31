@@ -122,6 +122,7 @@ class ArtifactBundle:
     kernel_version: str = ""
     build_system: str = ""
     metadata: dict = field(default_factory=dict)
+    schema_version: str = "1.0"
 
 class BuildSystemDiscovery(ABC):
     @abstractmethod
@@ -135,6 +136,14 @@ class BuildSystemDiscovery(ABC):
 
 **Path safety:** `collect()` must validate that `build_dir` is an absolute path
 and all discovered files are within it. No traversal outside the build directory.
+`auto_discover()` calls `.resolve()` on the input path and validates it is absolute.
+
+## Configuration via environment variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SCIATH_PACKAGECONFIG_RECIPES` | `openssl,curl,busybox,dbus,systemd,gstreamer1.0,ffmpeg,bluez5,wpa-supplicant` | Comma-separated list of recipes to extract PACKAGECONFIG from |
+| `SCIATH_MAX_DTBS` | `20` | Maximum number of DTB files to collect (prevents excessive upload size) |
 
 ## Development
 
