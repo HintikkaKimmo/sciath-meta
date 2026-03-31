@@ -94,8 +94,16 @@ class TestYoctoCollection:
         mock_run.return_value.stdout = 'PACKAGECONFIG="ssl zlib"\n'
 
         YoctoDiscovery().collect(yocto_build_dir)
-        # At least one recipe should have been queried
-        assert mock_run.called
+        # Verify bitbake -e was called with correct arguments
+        assert mock_run.call_count > 0, "subprocess.run should be called for PACKAGECONFIG"
+        first_call = mock_run.call_args_list[0]
+        cmd = first_call.args[0] if first_call.args else first_call.kwargs.get("args")
+        assert cmd[0] == "bitbake", "command should invoke bitbake"
+        assert cmd[1] == "-e", "bitbake should be called with -e flag"
+        assert first_call.kwargs.get("cwd") == str(yocto_build_dir), "cwd should be build dir"
+        assert first_call.kwargs.get("capture_output") is True
+        assert first_call.kwargs.get("text") is True
+        assert first_call.kwargs.get("timeout") == 30
 
     @patch("discovery.yocto.subprocess.run", side_effect=FileNotFoundError)
     def test_packageconfig_without_bitbake(self, mock_run, yocto_build_dir: Path):
