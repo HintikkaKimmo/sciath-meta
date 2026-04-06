@@ -1,0 +1,53 @@
+{
+  "vendor": "raspberrypi",
+  "display_name": "Raspberrypi",
+  "bsp_repo": "https://github.com/agherzan/meta-raspberrypi.git",
+  "branch": "scarthgap",
+  "analyzed_commit": "2c646d29912dcc873469a57b1c207e1549c5094d",
+  "analyzed_date": "2026-04-06",
+  "adapter_used": "forked_kernel",
+  "kernel_recipe": "linux-raspberrypi",
+  "kernel_srcrev": "77fc1fbcb5c013329af9583307dd1ff3cd4752aa",
+  "kernel_src_uri": "git://github.com/raspberrypi/linux.git;name=machine;branch=${LINUX_RPI_BRANCH};protocol=https git://git.yoctoproject.org/yocto-kernel-cache;type=kmeta;name=meta;branch=${LINUX_RPI_KMETA_BRANCH};destsuffix=${KMETA} file://powersave.cfg file://android-drivers.cfg ${@bb.utils.contains(",
+  "machines": [
+    "raspberrypi",
+    "raspberrypi-armv7",
+    "raspberrypi-armv8",
+    "raspberrypi-cm",
+    "raspberrypi-cm3",
+    "raspberrypi-cm5-io-board",
+    "raspberrypi0",
+    "raspberrypi0-2w",
+    "raspberrypi0-2w-64",
+    "raspberrypi0-wifi",
+    "raspberrypi2",
+    "raspberrypi3",
+    "raspberrypi3-64",
+    "raspberrypi4",
+    "raspberrypi4-64",
+    "raspberrypi5"
+  ],
+  "summary": {
+    "total_patches": 1,
+    "file_patches": 0,
+    "fork_references": 1,
+    "cve_tagged_patches": 0,
+    "kconfig_fragments": 8,
+    "kconfig_keys": 33
+  },
+  "patches": [
+    {
+      "name": "kernel-fork:github.com/raspberrypi/linux.git",
+      "source_type": "git_fork",
+      "confidence": "low",
+      "recipe": "linux-raspberrypi",
+      "git_url": "git://github.com/raspberrypi/linux.git",
+      "commit_hash": "77fc1fbcb5c013329af9583307dd1ff3cd4752aa"
+    }
+  ],
+  "metadata": {
+    "kernel_branch": "rpi-6.1.y",
+    "upstream_base_hint": "${LINUX_VERSION}+git${SRCPV}"
+  },
+  "warnings": []
+}

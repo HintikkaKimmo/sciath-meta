@@ -29,10 +29,13 @@
     },
     "libvorbis": {
       "effect": "feature_disabled",
-      "suppresses_cves": [],
+      "suppresses_cves": [
+        "CVE-2017-14633",
+        "CVE-2018-5147"
+      ],
       "cpe_component": "vorbis",
-      "confidence": "high",
-      "notes": "Disables Vorbis audio codec."
+      "confidence": "medium",
+      "notes": "Disables Vorbis audio codec. Out-of-bounds read and buffer overflow in libvorbis/libtremor not applicable. Note: CVEs are in libvorbis, not ffmpeg."
     },
     "libopus": {
       "effect": "feature_disabled",

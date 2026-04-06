@@ -51,10 +51,12 @@
     },
     "machined": {
       "effect": "feature_disabled",
-      "suppresses_cves": [],
+      "suppresses_cves": [
+        "CVE-2026-4105"
+      ],
       "cpe_component": "machined",
       "confidence": "high",
-      "notes": "Disables systemd-machined container/VM manager."
+      "notes": "Disables systemd-machined container/VM manager. RegisterMachine D-Bus privilege escalation not applicable."
     },
     "importd": {
       "effect": "feature_disabled",
@@ -74,10 +76,12 @@
     },
     "journal-remote": {
       "effect": "feature_disabled",
-      "suppresses_cves": [],
+      "suppresses_cves": [
+        "CVE-2018-16865"
+      ],
       "cpe_component": "journal_remote",
-      "confidence": "high",
-      "notes": "Disables remote journal reception."
+      "confidence": "medium",
+      "notes": "Disables remote journal reception. Journald memory allocation flaw exploitable via journal-remote. Note: CVE is in journald but journal-remote is the remote attack vector."
     }
   }
 }

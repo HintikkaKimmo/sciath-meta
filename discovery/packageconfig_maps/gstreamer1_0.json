@@ -36,17 +36,39 @@
     },
     "soup": {
       "effect": "feature_disabled",
-      "suppresses_cves": [],
+      "suppresses_cves": [
+        "CVE-2017-2885",
+        "CVE-2025-32052",
+        "CVE-2025-32053",
+        "CVE-2025-32911",
+        "CVE-2025-4476",
+        "CVE-2025-4945",
+        "CVE-2025-4969",
+        "CVE-2026-1467",
+        "CVE-2026-1536",
+        "CVE-2026-1761",
+        "CVE-2026-1801",
+        "CVE-2026-3099",
+        "CVE-2026-3632",
+        "CVE-2026-3633",
+        "CVE-2026-3634",
+        "CVE-2026-4271",
+        "CVE-2026-2369",
+        "CVE-2026-2436"
+      ],
       "cpe_component": "http_source",
-      "confidence": "high",
-      "notes": "Disables HTTP source element via libsoup."
+      "confidence": "medium",
+      "notes": "Disables HTTP source element via libsoup. 18 libsoup CVEs including RCE (stack overflow), CRLF injection, HTTP smuggling, use-after-free, and auth bypass. Note: CVEs are in libsoup, not gstreamer itself."
     },
     "vpx": {
       "effect": "feature_disabled",
-      "suppresses_cves": [],
+      "suppresses_cves": [
+        "CVE-2023-5217",
+        "CVE-2024-5197"
+      ],
       "cpe_component": "vpx",
-      "confidence": "high",
-      "notes": "Disables VP8/VP9 codec support."
+      "confidence": "medium",
+      "notes": "Disables VP8/VP9 codec support. Heap buffer overflow CVEs in libvpx not applicable. Note: CVEs are in libvpx, not gstreamer."
     }
   }
 }

@@ -1,0 +1,313 @@
+{
+  "vendor": "toradex",
+  "display_name": "Toradex",
+  "bsp_repo": "https://git.toradex.com/meta-toradex-bsp-common.git",
+  "branch": "scarthgap-7.x.y",
+  "analyzed_commit": "159b1b42c4c527a39ac0b41faad408d74299e2d6",
+  "analyzed_date": "2026-04-06",
+  "adapter_used": "forked_kernel",
+  "kernel_recipe": "linux-toradex-upstream",
+  "kernel_srcrev": "c2d104a355013a14bcd73e31fb2c4bc21922115a",
+  "kernel_src_uri": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git;protocol=https;branch=linux-6.12.y;name=machine git://git.toradex.com/linux-toradex-kconfig.git;protocol=https;type=kmeta;name=meta-toradex-bsp;branch=main;destsuffix=kernel-meta-toradex-bsp file://0001-thermal-imx-Update-critical-temp-threshold.patch file://0002-Revert-drm-panel-simple-drop-use-of-data-mapping-pro.patch file://0004-media-i2c-ov5640-Implement-get_mbus_config.patch file://0001-usb-gadget-f_ncm-Apply-workaround-for-packet-cloggin.patch file://0001-i2c-imx-do-not-poll-for-bus-busy-in-single-master-mo.patch file://0002-i2c-imx-separate-atomic-dma-and-non-dma-use-case.patch file://0003-i2c-imx-prevent-rescheduling-in-non-dma-mode.patch file://0004-arm64-dts-imx8mm-verdin-add-single-master-property-t.patch file://0005-arm64-dts-imx8mp-verdin-add-single-master-property-t.patch file://0001-i2c-imx-fix-missing-stop-condition-in-single-master-.patch file://0001-arm64-dts-imx8mp-Fix-VPU-PGC-power-domain-parents.patch file://0001-arm64-dts-ti-k3-am62-verdin-dahlia-add-Microphone-Ja.patch file://0001-dt-bindings-arm-freescale-Add-verdin-imx8mp-ivy-boar.patch file://0002-arm64-dts-freescale-imx8mp-verdin-add-labels-to-som-.patch file://0003-arm64-dts-freescale-imx8mp-verdin-Add-Ivy-carrier-bo.patch file://0004-arm64-dts-ti-k3-am62-verdin-Fix-SoM-ADC-compatible.patch file://0005-dt-bindings-arm-ti-Add-verdin-am62-ivy-board.patch file://0006-arm64-dts-ti-k3-am62-verdin-add-label-to-som-adc-nod.patch file://0007-arm64-dts-ti-k3-am62-verdin-Add-Ivy-carrier-board.patch file://0001-i2c-imx-fix-emulated-smbus-block-read.patch file://0001-wifi-mwifiex-enable-host-mlme-on-sdio-W8997-chipsets.patch file://0001-dt-bindings-arm-fsl-add-Toradex-SMARC-iMX8MP-SoM-and.patch file://0002-arm64-dts-freescale-add-Toradex-SMARC-iMX8MP.patch file://0003-dt-bindings-power-reset-add-toradex-smarc-ec.patch file://0004-power-reset-add-Toradex-Embedded-Controller.patch file://0005-arm64-dts-freescale-imx8mp-toradex-smarc-add-fan-PWM.patch file://0006-arm64-dts-freescale-imx8mp-toradex-smarc-add-embedde.patch file://0007-arm64-dts-freescale-imx8mp-toradex-smarc-add-gpio-ex.patch file://0008-arm64-dts-freescale-imx8mp-toradex-smarc-use-generic.patch file://0001-arm64-dts-freescale-imx8mp-toradex-smarc-remove-gpio.patch file://0001-net-phy-add-a-new-phy_device-flag-to-keep-preamble-b.patch file://0002-net-phy-micrel-add-option-to-keep-the-preamble-befor.patch file://0003-net-stmmac-dwmac-imx-keep-preamble-before-sfd-on-i.M.patch",
+  "machines": [
+    "apalis-imx8",
+    "aquila-imx95",
+    "colibri-imx6ull-emmc",
+    "colibri-imx7",
+    "colibri-imx8x",
+    "lino-imx93",
+    "toradex-osm-imx93",
+    "toradex-smarc-imx8mp",
+    "toradex-smarc-imx95",
+    "verdin-imx8mm",
+    "verdin-imx8mp",
+    "verdin-imx95"
+  ],
+  "summary": {
+    "total_patches": 34,
+    "file_patches": 33,
+    "fork_references": 1,
+    "cve_tagged_patches": 0,
+    "kconfig_fragments": 4,
+    "kconfig_keys": 745
+  },
+  "patches": [
+    {
+      "name": "kernel-fork:git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git",
+      "source_type": "git_fork",
+      "confidence": "low",
+      "recipe": "linux-toradex-upstream",
+      "git_url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git",
+      "commit_hash": "c2d104a355013a14bcd73e31fb2c4bc21922115a"
+    },
+    {
+      "name": "0001-thermal-imx-Update-critical-temp-threshold.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0001-thermal-imx-Update-critical-temp-threshold.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0002-Revert-drm-panel-simple-drop-use-of-data-mapping-pro.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0002-Revert-drm-panel-simple-drop-use-of-data-mapping-pro.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0004-media-i2c-ov5640-Implement-get_mbus_config.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0004-media-i2c-ov5640-Implement-get_mbus_config.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0001-usb-gadget-f_ncm-Apply-workaround-for-packet-cloggin.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0001-usb-gadget-f_ncm-Apply-workaround-for-packet-cloggin.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0001-i2c-imx-do-not-poll-for-bus-busy-in-single-master-mo.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0001-i2c-imx-do-not-poll-for-bus-busy-in-single-master-mo.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0002-i2c-imx-separate-atomic-dma-and-non-dma-use-case.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0002-i2c-imx-separate-atomic-dma-and-non-dma-use-case.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0003-i2c-imx-prevent-rescheduling-in-non-dma-mode.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0003-i2c-imx-prevent-rescheduling-in-non-dma-mode.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0004-arm64-dts-imx8mm-verdin-add-single-master-property-t.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0004-arm64-dts-imx8mm-verdin-add-single-master-property-t.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0005-arm64-dts-imx8mp-verdin-add-single-master-property-t.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0005-arm64-dts-imx8mp-verdin-add-single-master-property-t.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0001-i2c-imx-fix-missing-stop-condition-in-single-master-.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0001-i2c-imx-fix-missing-stop-condition-in-single-master-.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0001-arm64-dts-imx8mp-Fix-VPU-PGC-power-domain-parents.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0001-arm64-dts-imx8mp-Fix-VPU-PGC-power-domain-parents.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0001-arm64-dts-ti-k3-am62-verdin-dahlia-add-Microphone-Ja.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream/0001-arm64-dts-ti-k3-am62-verdin-dahlia-add-Microphone-Ja.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0001-dt-bindings-arm-freescale-Add-verdin-imx8mp-ivy-boar.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0001-dt-bindings-arm-freescale-Add-verdin-imx8mp-ivy-boar.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0002-arm64-dts-freescale-imx8mp-verdin-add-labels-to-som-.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0002-arm64-dts-freescale-imx8mp-verdin-add-labels-to-som-.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0003-arm64-dts-freescale-imx8mp-verdin-Add-Ivy-carrier-bo.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0003-arm64-dts-freescale-imx8mp-verdin-Add-Ivy-carrier-bo.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0004-arm64-dts-ti-k3-am62-verdin-Fix-SoM-ADC-compatible.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0004-arm64-dts-ti-k3-am62-verdin-Fix-SoM-ADC-compatible.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0005-dt-bindings-arm-ti-Add-verdin-am62-ivy-board.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0005-dt-bindings-arm-ti-Add-verdin-am62-ivy-board.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0006-arm64-dts-ti-k3-am62-verdin-add-label-to-som-adc-nod.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0006-arm64-dts-ti-k3-am62-verdin-add-label-to-som-adc-nod.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0007-arm64-dts-ti-k3-am62-verdin-Add-Ivy-carrier-board.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0007-arm64-dts-ti-k3-am62-verdin-Add-Ivy-carrier-board.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0001-i2c-imx-fix-emulated-smbus-block-read.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0001-i2c-imx-fix-emulated-smbus-block-read.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0001-wifi-mwifiex-enable-host-mlme-on-sdio-W8997-chipsets.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0001-wifi-mwifiex-enable-host-mlme-on-sdio-W8997-chipsets.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0001-dt-bindings-arm-fsl-add-Toradex-SMARC-iMX8MP-SoM-and.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0001-dt-bindings-arm-fsl-add-Toradex-SMARC-iMX8MP-SoM-and.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0002-arm64-dts-freescale-add-Toradex-SMARC-iMX8MP.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0002-arm64-dts-freescale-add-Toradex-SMARC-iMX8MP.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0003-dt-bindings-power-reset-add-toradex-smarc-ec.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0003-dt-bindings-power-reset-add-toradex-smarc-ec.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0004-power-reset-add-Toradex-Embedded-Controller.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0004-power-reset-add-Toradex-Embedded-Controller.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0005-arm64-dts-freescale-imx8mp-toradex-smarc-add-fan-PWM.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0005-arm64-dts-freescale-imx8mp-toradex-smarc-add-fan-PWM.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0006-arm64-dts-freescale-imx8mp-toradex-smarc-add-embedde.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0006-arm64-dts-freescale-imx8mp-toradex-smarc-add-embedde.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0007-arm64-dts-freescale-imx8mp-toradex-smarc-add-gpio-ex.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0007-arm64-dts-freescale-imx8mp-toradex-smarc-add-gpio-ex.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0008-arm64-dts-freescale-imx8mp-toradex-smarc-use-generic.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0008-arm64-dts-freescale-imx8mp-toradex-smarc-use-generic.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0001-arm64-dts-freescale-imx8mp-toradex-smarc-remove-gpio.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0001-arm64-dts-freescale-imx8mp-toradex-smarc-remove-gpio.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0001-net-phy-add-a-new-phy_device-flag-to-keep-preamble-b.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0001-net-phy-add-a-new-phy_device-flag-to-keep-preamble-b.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0002-net-phy-micrel-add-option-to-keep-the-preamble-befor.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0002-net-phy-micrel-add-option-to-keep-the-preamble-befor.patch",
+      "has_cve_tag": false
+    },
+    {
+      "name": "0003-net-stmmac-dwmac-imx-keep-preamble-before-sfd-on-i.M.patch",
+      "source_type": "file",
+      "confidence": "medium",
+      "recipe": "linux-toradex-upstream",
+      "relative_path": "recipes-kernel/linux/linux-toradex-upstream-6.12/0003-net-stmmac-dwmac-imx-keep-preamble-before-sfd-on-i.M.patch",
+      "has_cve_tag": false
+    }
+  ],
+  "metadata": {
+    "kernel_branch": "linux-6.12.y",
+    "upstream_base_hint": "6.12"
+  },
+  "warnings": []
+}

@@ -14,9 +14,12 @@ import os
 import re
 import subprocess
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from discovery.base import ArtifactBundle, BuildSystemDiscovery
+
+if TYPE_CHECKING:
+    from discovery.bsp._types import BSPProfile
 from discovery.packageconfig_maps import lookup_suppressions
 
 logger = logging.getLogger(__name__)
@@ -63,6 +66,9 @@ class YoctoDiscovery(BuildSystemDiscovery):
         # PACKAGECONFIG (expensive — requires bitbake -e)
         bundle.packageconfigs = self._extract_packageconfigs(build_dir)
 
+        # BSP patch discovery
+        bundle.bsp_profile = self._discover_bsp_patches(build_dir, bundle.yocto_machine)
+
         # Cross-reference PACKAGECONFIG with CVE suppression maps
         for recipe, flags in bundle.packageconfigs.items():
             suppressed = lookup_suppressions(recipe, flags)
@@ -71,6 +77,19 @@ class YoctoDiscovery(BuildSystemDiscovery):
 
         logger.info("Yocto discovery: %s", bundle.summary())
         return bundle
+
+    def _discover_bsp_patches(self, build_dir: Path, machine: str) -> Optional["BSPProfile"]:
+        """Discover BSP layer patches via vendor-specific adapters.
+
+        Non-blocking: all errors become warnings, never failures.
+        Returns None if no BSP layer is detected.
+        """
+        try:
+            from discovery.bsp import extract_bsp_patches
+            return extract_bsp_patches(build_dir, machine)
+        except Exception as e:
+            logger.warning("BSP patch discovery failed (non-blocking): %s", e)
+            return None
 
     # ── Helpers ────────────────────────────────────────────────────────
 

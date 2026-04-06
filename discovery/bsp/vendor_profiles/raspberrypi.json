@@ -1,0 +1,16 @@
+{
+  "vendor": "raspberrypi",
+  "display_name": "Raspberry Pi Foundation",
+  "adapter": "forked_kernel",
+  "priority": 10,
+  "layer_patterns": [
+    "meta-raspberrypi"
+  ],
+  "machine_patterns": [
+    "raspberrypi*"
+  ],
+  "kernel_recipe_patterns": [
+    "linux-raspberrypi"
+  ],
+  "notes": "Forked kernel repo (github.com/raspberrypi/linux). Patches are commits in the fork, plus .cfg kconfig fragments. No file-based .patch files in kernel recipe."
+}

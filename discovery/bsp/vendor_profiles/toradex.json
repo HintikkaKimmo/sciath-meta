@@ -1,0 +1,21 @@
+{
+  "vendor": "toradex",
+  "display_name": "Toradex",
+  "adapter": "forked_kernel",
+  "priority": 10,
+  "layer_patterns": [
+    "meta-toradex-bsp-common",
+    "meta-toradex-nxp",
+    "meta-toradex-ti"
+  ],
+  "machine_patterns": [
+    "apalis-*",
+    "colibri-*",
+    "verdin-*",
+    "aquila-*"
+  ],
+  "kernel_recipe_patterns": [
+    "linux-toradex"
+  ],
+  "notes": "Vendor maintains a git fork. Patches are commits, not files. 4 file-based patches found in field testing."
+}

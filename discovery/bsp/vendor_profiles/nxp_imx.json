@@ -1,0 +1,17 @@
+{
+  "vendor": "nxp_imx",
+  "display_name": "NXP i.MX",
+  "adapter": "forked_kernel",
+  "priority": 10,
+  "layer_patterns": [
+    "meta-imx",
+    "meta-freescale"
+  ],
+  "machine_patterns": [
+    "imx*"
+  ],
+  "kernel_recipe_patterns": [
+    "linux-imx"
+  ],
+  "notes": "NXP silicon vendor reference layer. Forked kernel repo."
+}

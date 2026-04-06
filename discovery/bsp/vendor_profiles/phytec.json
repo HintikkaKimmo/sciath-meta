@@ -1,0 +1,19 @@
+{
+  "vendor": "phytec",
+  "display_name": "PHYTEC",
+  "adapter": "hybrid",
+  "priority": 10,
+  "layer_patterns": [
+    "meta-phytec"
+  ],
+  "machine_patterns": [
+    "phyboard-*",
+    "phycore-*"
+  ],
+  "kernel_recipe_patterns": [
+    "linux-phytec",
+    "linux-phytec-ti",
+    "linux-phytec-imx"
+  ],
+  "notes": "Hybrid: vendor kernel fork plus 20 additional file patches. 262 kconfig keys from 41 config fragments."
+}

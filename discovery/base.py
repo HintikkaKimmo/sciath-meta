@@ -2,10 +2,15 @@
 Base classes for build system artifact discovery.
 """
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from discovery.bsp._types import BSPProfile
 
 
 @dataclass
@@ -27,7 +32,8 @@ class ArtifactBundle:
     yocto_distro: str = ""
     kernel_version: str = ""
     build_system: str = ""
-    schema_version: str = "1.1"
+    bsp_profile: Optional[BSPProfile] = None
+    schema_version: str = "1.2"
     metadata: dict[str, str] = field(default_factory=dict)
 
     @property
@@ -52,6 +58,8 @@ class ArtifactBundle:
             count += 1
         if self.packageconfigs:
             count += 1
+        if self.bsp_profile and self.bsp_profile.patch_count > 0:
+            count += 1
         return count
 
     def summary(self) -> str:
@@ -70,6 +78,12 @@ class ArtifactBundle:
         if self.packageconfig_suppressions:
             total = sum(len(v) for v in self.packageconfig_suppressions.values())
             parts.append(f"{total} CVEs suppressed by PACKAGECONFIG")
+        if self.bsp_profile and self.bsp_profile.patch_count:
+            parts.append(
+                f"BSP patches ({self.bsp_profile.patch_count}: "
+                f"{self.bsp_profile.file_patch_count} file, "
+                f"{self.bsp_profile.fork_patch_count} fork)"
+            )
         if not parts:
             return "No artifacts found"
         return f"Found: {', '.join(parts)} [{self.build_system}]"

@@ -5,10 +5,12 @@
   "flags": {
     "mesh": {
       "effect": "feature_disabled",
-      "suppresses_cves": [],
+      "suppresses_cves": [
+        "CVE-2021-27803"
+      ],
       "cpe_component": "mesh",
       "confidence": "high",
-      "notes": "Disables 802.11s mesh networking."
+      "notes": "Disables 802.11s mesh networking. P2P provision discovery vulnerability in mesh code path not applicable."
     },
     "eap-fast": {
       "effect": "feature_disabled",
@@ -41,10 +43,12 @@
     },
     "pmf": {
       "effect": "feature_disabled",
-      "suppresses_cves": [],
+      "suppresses_cves": [
+        "CVE-2019-16275"
+      ],
       "cpe_component": "pmf",
       "confidence": "high",
-      "notes": "Disables Protected Management Frames (802.11w)."
+      "notes": "Disables Protected Management Frames (802.11w). PMF bypass DoS via crafted deauthentication frames not applicable."
     },
     "p2p": {
       "effect": "feature_disabled",

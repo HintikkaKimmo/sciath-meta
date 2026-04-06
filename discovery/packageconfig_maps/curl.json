@@ -34,31 +34,41 @@
     },
     "smtp": {
       "effect": "feature_disabled",
-      "suppresses_cves": [],
+      "suppresses_cves": [
+        "CVE-2019-3823",
+        "CVE-2018-0500"
+      ],
       "cpe_component": "smtp",
       "confidence": "high",
-      "notes": "Disables SMTP protocol handler."
+      "notes": "Disables SMTP protocol handler. SMTP end-of-response OOB read and SMTP send heap buffer overflow not applicable."
     },
     "imap": {
       "effect": "feature_disabled",
-      "suppresses_cves": [],
+      "suppresses_cves": [
+        "CVE-2017-1000257"
+      ],
       "cpe_component": "imap",
       "confidence": "high",
-      "notes": "Disables IMAP protocol handler."
+      "notes": "Disables IMAP protocol handler. IMAP FETCH response out-of-bounds read not applicable."
     },
     "pop3": {
       "effect": "feature_disabled",
       "suppresses_cves": [],
       "cpe_component": "pop3",
       "confidence": "high",
-      "notes": "Disables POP3 protocol handler."
+      "notes": "Disables POP3 protocol handler. No protocol-specific CVEs identified as of 2026-04."
     },
     "tftp": {
       "effect": "feature_disabled",
-      "suppresses_cves": [],
+      "suppresses_cves": [
+        "CVE-2019-5482",
+        "CVE-2019-5436",
+        "CVE-2017-1000100",
+        "CVE-2006-1061"
+      ],
       "cpe_component": "tftp",
       "confidence": "high",
-      "notes": "Disables TFTP protocol handler."
+      "notes": "Disables TFTP protocol handler. TFTP small blocksize heap buffer overflow, receive buffer overflow, and packet overflow CVEs not applicable."
     },
     "telnet": {
       "effect": "feature_disabled",

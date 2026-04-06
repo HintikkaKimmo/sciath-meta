@@ -1,0 +1,10 @@
+{
+  "vendor": "generic",
+  "display_name": "Unknown / Generic BSP",
+  "adapter": "file_patches",
+  "priority": 0,
+  "layer_patterns": [],
+  "machine_patterns": [],
+  "kernel_recipe_patterns": [],
+  "notes": "Fallback adapter. Attempts file patch extraction on any BSP layer with a kernel recipe. Confidence set to low."
+}

@@ -7,8 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **BSP layer patch discovery** — VendorAdapter pattern for extracting kernel patches from vendor BSP layers. Supports file patches (Raspberry Pi), forked kernel repos (Toradex, NXP), and hybrid (PHYTEC). Static analysis only, no BitBake environment required.
+- **Machine-aware recipe parsing** — static regex parser for .bb/.bbappend files handles SRC_URI assignment variants including machine-conditional overrides (SRC_URI:append:MACHINE).
+- **Vendor profile system** — JSON-based vendor detection with profiles for Raspberry Pi, Toradex, NXP i.MX, PHYTEC, and a generic fallback.
+- **Confidence-rated patch metadata** — PatchInfo includes high/medium/low confidence based on CVE tag presence, with defined consumer behavior spec.
+
 ### Changed
 
+- **Schema version bump** — ArtifactBundle schema_version updated from "1.1" to "1.2" (new bsp_profile field).
 - **Configurable PACKAGECONFIG recipes** — override default recipe list via `SCIATH_PACKAGECONFIG_RECIPES` env var (comma-separated)
 - **Configurable DTB cap** — override default 20-DTB limit via `SCIATH_MAX_DTBS` env var
 - **Schema version** — `ArtifactBundle` now includes `schema_version` field (default "1.0")
