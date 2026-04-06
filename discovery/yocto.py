@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Optional
 
 from discovery.base import ArtifactBundle, BuildSystemDiscovery
+from discovery.packageconfig_maps import lookup_suppressions
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +62,12 @@ class YoctoDiscovery(BuildSystemDiscovery):
 
         # PACKAGECONFIG (expensive — requires bitbake -e)
         bundle.packageconfigs = self._extract_packageconfigs(build_dir)
+
+        # Cross-reference PACKAGECONFIG with CVE suppression maps
+        for recipe, flags in bundle.packageconfigs.items():
+            suppressed = lookup_suppressions(recipe, flags)
+            if suppressed:
+                bundle.packageconfig_suppressions[recipe] = suppressed
 
         logger.info("Yocto discovery: %s", bundle.summary())
         return bundle

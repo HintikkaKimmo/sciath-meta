@@ -22,11 +22,12 @@ class ArtifactBundle:
     dtb: list[Path] = field(default_factory=list)
     busybox_config: Optional[Path] = None
     packageconfigs: dict[str, list[str]] = field(default_factory=dict)
+    packageconfig_suppressions: dict[str, list[str]] = field(default_factory=dict)
     yocto_machine: str = ""
     yocto_distro: str = ""
     kernel_version: str = ""
     build_system: str = ""
-    schema_version: str = "1.0"
+    schema_version: str = "1.1"
     metadata: dict[str, str] = field(default_factory=dict)
 
     @property
@@ -66,6 +67,9 @@ class ArtifactBundle:
             parts.append("busybox config")
         if self.packageconfigs:
             parts.append(f"PACKAGECONFIG ({len(self.packageconfigs)} recipes)")
+        if self.packageconfig_suppressions:
+            total = sum(len(v) for v in self.packageconfig_suppressions.values())
+            parts.append(f"{total} CVEs suppressed by PACKAGECONFIG")
         if not parts:
             return "No artifacts found"
         return f"Found: {', '.join(parts)} [{self.build_system}]"

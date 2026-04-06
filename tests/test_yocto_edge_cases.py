@@ -208,7 +208,7 @@ class TestRecipeNameSanitization:
 class TestSchemaVersion:
     def test_default_schema_version(self):
         bundle = ArtifactBundle()
-        assert bundle.schema_version == "1.0"
+        assert bundle.schema_version == "1.1"
 
     def test_custom_schema_version(self):
         bundle = ArtifactBundle(schema_version="2.0")
