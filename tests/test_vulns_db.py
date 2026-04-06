@@ -25,68 +25,110 @@ class TestVulnEntry:
         assert entry.single_commit is False
 
 
+def _make_cve_json(cve_id: str, git_commits: list[str] | None = None,
+                   semver_fixes: dict[str, str] | None = None) -> str:
+    """Create a CVE JSON 5.0 file for testing."""
+    affected_blocks = []
+
+    # Git commit block
+    if git_commits:
+        versions = []
+        for commit in git_commits:
+            versions.append({
+                "version": "0" * 40,
+                "lessThan": commit,
+                "status": "affected",
+                "versionType": "git",
+            })
+        affected_blocks.append({"product": "Linux", "vendor": "Linux", "versions": versions})
+
+    # Semver block
+    if semver_fixes:
+        versions = []
+        for branch_ver in semver_fixes.values():
+            versions.append({
+                "version": branch_ver,
+                "lessThanOrEqual": f"{'.'.join(branch_ver.split('.')[:2])}.*",
+                "status": "unaffected",
+                "versionType": "semver",
+            })
+        affected_blocks.append({"product": "Linux", "vendor": "Linux", "versions": versions})
+
+    data = {"containers": {"cna": {"affected": affected_blocks}}}
+    return json.dumps(data)
+
+
 class TestIngestVulnsGit:
-    def test_parse_stream_file(self, tmp_path: Path):
-        stream = tmp_path / "cve" / "published"
-        stream.mkdir(parents=True)
-        (stream / "CVE-2024-1234.txt").write_text(
-            "cve: CVE-2024-1234\n"
-            "fixed-by:\n"
-            "  - abc123def456789012345678901234567890abcd\n"
+    def test_parse_cve_json(self, tmp_path: Path):
+        pub = tmp_path / "cve" / "published" / "2024"
+        pub.mkdir(parents=True)
+        (pub / "CVE-2024-1234.json").write_text(
+            _make_cve_json(
+                "CVE-2024-1234",
+                git_commits=["abc123def456789012345678901234567890abcd"],
+                semver_fixes={"6.1": "6.1.75"},
+            )
         )
         result = ingest_vulns_git(tmp_path)
         assert "CVE-2024-1234" in result
         assert result["CVE-2024-1234"].fixing_commits == [
             "abc123def456789012345678901234567890abcd"
         ]
+        assert result["CVE-2024-1234"].fixed_in_versions == {"6.1": "6.1.75"}
 
     def test_parse_multiple_commits(self, tmp_path: Path):
-        stream = tmp_path / "cve" / "published"
-        stream.mkdir(parents=True)
-        (stream / "CVE-2024-5678.txt").write_text(
-            "cve: CVE-2024-5678\n"
-            "fixed-by:\n"
-            "  - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
-            "  - bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n"
+        pub = tmp_path / "cve" / "published"
+        pub.mkdir(parents=True)
+        (pub / "CVE-2024-5678.json").write_text(
+            _make_cve_json(
+                "CVE-2024-5678",
+                git_commits=[
+                    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                ],
+            )
         )
         result = ingest_vulns_git(tmp_path)
         assert len(result["CVE-2024-5678"].fixing_commits) == 2
 
+    def test_parse_semver_only(self, tmp_path: Path):
+        pub = tmp_path / "cve" / "published"
+        pub.mkdir(parents=True)
+        (pub / "CVE-2024-7777.json").write_text(
+            _make_cve_json("CVE-2024-7777", semver_fixes={"6.1": "6.1.80", "6.6": "6.6.20"})
+        )
+        result = ingest_vulns_git(tmp_path)
+        assert result["CVE-2024-7777"].fixed_in_versions == {"6.1": "6.1.80", "6.6": "6.6.20"}
+
     def test_handle_malformed_file(self, tmp_path: Path):
-        stream = tmp_path / "cve" / "published"
-        stream.mkdir(parents=True)
-        (stream / "garbage.txt").write_text("this is not a CVE file\n")
+        pub = tmp_path / "cve" / "published"
+        pub.mkdir(parents=True)
+        (pub / "garbage.json").write_text("not json{{{")
         result = ingest_vulns_git(tmp_path)
         assert len(result) == 0
 
-    def test_handle_empty_stream(self, tmp_path: Path):
-        stream = tmp_path / "cve" / "published"
-        stream.mkdir(parents=True)
+    def test_handle_empty_dir(self, tmp_path: Path):
+        pub = tmp_path / "cve" / "published"
+        pub.mkdir(parents=True)
         result = ingest_vulns_git(tmp_path)
         assert result == {}
 
-    def test_missing_stream_dir(self, tmp_path: Path):
+    def test_missing_published_dir(self, tmp_path: Path):
         result = ingest_vulns_git(tmp_path)
         assert result == {}
 
-    def test_fallback_to_stream_dir(self, tmp_path: Path):
-        stream = tmp_path / "stream"
-        stream.mkdir()
-        (stream / "CVE-2024-9999.txt").write_text(
-            "cve: CVE-2024-9999\n"
-            "fixed-by:\n"
-            "  - cccccccccccccccccccccccccccccccccccccccc\n"
-        )
+    def test_skips_schema_files(self, tmp_path: Path):
+        pub = tmp_path / "cve" / "published"
+        pub.mkdir(parents=True)
+        (pub / "CVE_JSON_5.0_schema.json").write_text("{}")
         result = ingest_vulns_git(tmp_path)
-        assert "CVE-2024-9999" in result
+        assert len(result) == 0
 
-    def test_cve_in_subdirectory(self, tmp_path: Path):
+    def test_cve_in_year_subdirectory(self, tmp_path: Path):
         subdir = tmp_path / "cve" / "published" / "2024"
         subdir.mkdir(parents=True)
-        (subdir / "CVE-2024-1111.txt").write_text(
-            "cve: CVE-2024-1111\n"
-            "fixed-by:\n"
-            "  - dddddddddddddddddddddddddddddddddddddddd\n"
+        (subdir / "CVE-2024-1111.json").write_text(
+            _make_cve_json("CVE-2024-1111", semver_fixes={"6.1": "6.1.90"})
         )
         result = ingest_vulns_git(tmp_path)
         assert "CVE-2024-1111" in result
@@ -107,7 +149,8 @@ class TestSaveLoadRoundtrip:
         loaded = load_vulns_db(output)
         assert loaded is not None
         assert "CVE-2024-1234" in loaded
-        assert loaded["CVE-2024-1234"].fixing_commits == ["abc123"]
+        # fixing_commits are stripped in compact save format
+        assert loaded["CVE-2024-1234"].fixing_commits == []
         assert loaded["CVE-2024-1234"].fixed_in_versions == {"6.1": "6.1.75", "6.6": "6.6.15"}
 
     def test_load_nonexistent(self, tmp_path: Path):
