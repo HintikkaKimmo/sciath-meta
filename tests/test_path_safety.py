@@ -32,3 +32,11 @@ class TestPathSafety:
 
     def test_build_dir_itself_is_valid(self, tmp_path: Path):
         assert ConcreteDiscovery()._validate_path(tmp_path, tmp_path) is True
+
+    def test_rejects_symlink_escape(self, tmp_path: Path):
+        """Symlinks pointing outside build_dir must be rejected."""
+        outside = tmp_path.parent / "secret.txt"
+        outside.write_text("sensitive")
+        link = tmp_path / "link_to_secret"
+        link.symlink_to(outside)
+        assert ConcreteDiscovery()._validate_path(link, tmp_path) is False

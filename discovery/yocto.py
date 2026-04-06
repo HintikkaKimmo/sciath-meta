@@ -20,6 +20,8 @@ from discovery.base import ArtifactBundle, BuildSystemDiscovery
 
 logger = logging.getLogger(__name__)
 
+_RECIPE_NAME_RE = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9._+-]*$")
+
 
 class YoctoDiscovery(BuildSystemDiscovery):
     """Discover artifacts from a Yocto/OE build tree."""
@@ -44,7 +46,7 @@ class YoctoDiscovery(BuildSystemDiscovery):
         deploy_dir = tmp_dir / "deploy"
 
         # SBOM: prefer SPDX, fall back to cve-check manifest
-        bundle.sbom, bundle.sbom_format = self._find_sbom(deploy_dir)
+        bundle.sbom, bundle.sbom_format = self._find_sbom(deploy_dir, build_dir)
 
         # Kernel .config
         bundle.kconfig = self._find_kconfig(tmp_dir)
@@ -52,10 +54,10 @@ class YoctoDiscovery(BuildSystemDiscovery):
             bundle.kernel_version = self._extract_kernel_version(bundle.kconfig)
 
         # DTBs
-        bundle.dtb = self._find_dtbs(deploy_dir, bundle.yocto_machine)
+        bundle.dtb = self._find_dtbs(deploy_dir, bundle.yocto_machine, build_dir)
 
         # Busybox .config
-        bundle.busybox_config = self._find_busybox_config(tmp_dir)
+        bundle.busybox_config = self._find_busybox_config(tmp_dir, build_dir)
 
         # PACKAGECONFIG (expensive — requires bitbake -e)
         bundle.packageconfigs = self._extract_packageconfigs(build_dir)
@@ -78,43 +80,49 @@ class YoctoDiscovery(BuildSystemDiscovery):
         except Exception:
             return ""
 
-    def _find_sbom(self, deploy_dir: Path) -> tuple[Optional[Path], str]:
+    def _find_sbom(self, deploy_dir: Path, build_dir: Path) -> tuple[Optional[Path], str]:
         """Find SBOM in deploy directory. Prefer SPDX over cve-check."""
         # SPDX output from create-spdx.bbclass
         spdx_dir = deploy_dir / "spdx"
         if spdx_dir.exists():
             spdx_files = sorted(spdx_dir.glob("*.spdx.json"), key=lambda p: p.stat().st_mtime, reverse=True)
-            if spdx_files:
-                return spdx_files[0], "spdx"
+            for f in spdx_files:
+                if self._validate_path(f, build_dir):
+                    return f, "spdx"
 
         # CycloneDX (some Yocto setups generate this)
         cdx_files = sorted(deploy_dir.glob("**/*.cdx.json"), key=lambda p: p.stat().st_mtime, reverse=True)
-        if cdx_files:
-            return cdx_files[0], "cyclonedx"
+        for f in cdx_files:
+            if self._validate_path(f, build_dir):
+                return f, "cyclonedx"
 
         # cve-check manifest
         cve_dir = deploy_dir / "cve"
         if cve_dir.exists():
             cve_files = sorted(cve_dir.glob("*.cve"), key=lambda p: p.stat().st_mtime, reverse=True)
-            if cve_files:
-                return cve_files[0], "yocto-cve-check"
+            for f in cve_files:
+                if self._validate_path(f, build_dir):
+                    return f, "yocto-cve-check"
 
         return None, ""
 
     def _find_kconfig(self, tmp_dir: Path) -> Optional[Path]:
         """Find kernel .config from staging or work directory."""
-        # Staging kernel dir (most reliable)
+        build_dir = tmp_dir.parent
+        # Staging kernel dir (most reliable) — targeted glob to avoid
+        # matching non-kernel .config files in large sysroots trees
         staging = tmp_dir / "sysroots-components"
         if staging.exists():
-            for config in staging.rglob(".config"):
-                if "kernel" in str(config).lower() or "linux" in str(config).lower():
+            for config in staging.glob("*/*linux*/.config"):
+                if self._validate_path(config, build_dir):
                     return config
 
         # Work dir fallback
         work_dir = tmp_dir / "work"
         if work_dir.exists():
             for config in work_dir.glob("*/linux-*/*/build/.config"):
-                return config
+                if self._validate_path(config, build_dir):
+                    return config
 
         return None
 
@@ -127,7 +135,7 @@ class YoctoDiscovery(BuildSystemDiscovery):
         except Exception:
             return ""
 
-    def _find_dtbs(self, deploy_dir: Path, machine: str) -> list[Path]:
+    def _find_dtbs(self, deploy_dir: Path, machine: str, build_dir: Path) -> list[Path]:
         """Find DTB files in deploy directory."""
         image_dir = deploy_dir / "images" / machine if machine else deploy_dir / "images"
         if not image_dir.exists():
@@ -136,25 +144,27 @@ class YoctoDiscovery(BuildSystemDiscovery):
             if not image_dir.exists():
                 return []
 
-        dtbs = list(image_dir.glob("*.dtb"))
+        dtbs = [p for p in image_dir.glob("*.dtb") if self._validate_path(p, build_dir)]
         # Also check for .dts source files
-        dtbs.extend(image_dir.glob("*.dts"))
+        dtbs.extend(p for p in image_dir.glob("*.dts") if self._validate_path(p, build_dir))
         # Cap DTB count to prevent excessive upload size. Most boards have 1-5 DTBs;
         # 20 covers multi-board images. Override via SCIATH_MAX_DTBS env var.
         max_dtbs = int(os.environ.get("SCIATH_MAX_DTBS", "20"))
         return dtbs[:max_dtbs]
 
-    def _find_busybox_config(self, tmp_dir: Path) -> Optional[Path]:
+    def _find_busybox_config(self, tmp_dir: Path, build_dir: Path) -> Optional[Path]:
         """Find busybox .config from work directory."""
         work_dir = tmp_dir / "work"
         if not work_dir.exists():
             return None
 
         for config in work_dir.glob("*/busybox/*/build/.config"):
-            return config
+            if self._validate_path(config, build_dir):
+                return config
         # Alternative path in some Yocto versions
         for config in work_dir.glob("*/busybox-*/build/.config"):
-            return config
+            if self._validate_path(config, build_dir):
+                return config
 
         return None
 
@@ -176,6 +186,9 @@ class YoctoDiscovery(BuildSystemDiscovery):
 
         configs: dict[str, list[str]] = {}
         for recipe in target_recipes:
+            if not _RECIPE_NAME_RE.match(recipe):
+                logger.warning("Skipping invalid recipe name: %r", recipe)
+                continue
             flags = self._get_packageconfig(build_dir, recipe)
             if flags is not None:
                 configs[recipe] = flags

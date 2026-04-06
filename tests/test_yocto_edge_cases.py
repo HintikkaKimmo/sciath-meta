@@ -168,6 +168,43 @@ class TestConfigurableDtbCap:
         assert len(bundle.dtb) == 20
 
 
+class TestRecipeNameSanitization:
+    @patch("discovery.yocto.subprocess.run")
+    def test_rejects_malicious_recipe_name(self, mock_run, yocto_build_dir: Path):
+        """Recipe names with shell metacharacters must be skipped."""
+        import os
+
+        os.environ["SCIATH_PACKAGECONFIG_RECIPES"] = "openssl,; rm -rf /,curl"
+        try:
+            d = YoctoDiscovery()
+            d.collect(yocto_build_dir)
+            # Only openssl and curl should be attempted (the malicious one skipped)
+            called_recipes = [
+                call.args[0][2] if call.args else call.kwargs.get("args", [])[2]
+                for call in mock_run.call_args_list
+            ]
+            assert "; rm -rf /" not in called_recipes
+            assert "openssl" in called_recipes
+            assert "curl" in called_recipes
+        finally:
+            del os.environ["SCIATH_PACKAGECONFIG_RECIPES"]
+
+    @patch("discovery.yocto.subprocess.run")
+    def test_allows_valid_recipe_names(self, mock_run, yocto_build_dir: Path):
+        """Valid Yocto recipe names (with dots, hyphens, plus) must be accepted."""
+        import os
+
+        mock_run.return_value.returncode = 0
+        mock_run.return_value.stdout = 'PACKAGECONFIG="ssl"\n'
+        os.environ["SCIATH_PACKAGECONFIG_RECIPES"] = "gstreamer1.0,wpa-supplicant,libstdc++"
+        try:
+            d = YoctoDiscovery()
+            d.collect(yocto_build_dir)
+            assert mock_run.call_count == 3
+        finally:
+            del os.environ["SCIATH_PACKAGECONFIG_RECIPES"]
+
+
 class TestSchemaVersion:
     def test_default_schema_version(self):
         bundle = ArtifactBundle()
