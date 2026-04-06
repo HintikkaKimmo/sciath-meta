@@ -10,10 +10,25 @@ from pathlib import Path
 
 from discovery.bsp._layer_scanner import find_bsp_layers, get_layer_name, parse_bblayers
 from discovery.bsp._recipe_parser import find_kernel_recipe
-from discovery.bsp._types import BSPProfile, PatchInfo, PatchSourceType
+from discovery.bsp._types import (
+    BSPProfile,
+    Confidence,
+    PatchInfo,
+    PatchSourceType,
+    SuppressionStatus,
+    VersionMatch,
+)
 from discovery.bsp.adapters import detect_vendor
 
-__all__ = ["BSPProfile", "PatchInfo", "PatchSourceType", "extract_bsp_patches"]
+__all__ = [
+    "BSPProfile",
+    "Confidence",
+    "PatchInfo",
+    "PatchSourceType",
+    "SuppressionStatus",
+    "VersionMatch",
+    "extract_bsp_patches",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -94,9 +109,46 @@ def _extract_bsp_patches_inner(build_dir: Path, machine: str) -> BSPProfile | No
     result.vendor = vendor
     result.vendor_layer = vendor_layer_name
 
+    # Extract kernel version from recipe
+    from discovery.bsp._recipe_parser import parse_linux_version
+
+    linux_version = parse_linux_version(kernel_recipe)
+    if linux_version:
+        result.metadata["linux_version"] = linux_version
+
+    # Version-based CVE suppression
+    _run_version_suppression(result)
+
     logger.info(
         "BSP discovery: %s vendor, %d patches (%d file, %d fork)",
         vendor, result.patch_count, result.file_patch_count, result.fork_patch_count,
     )
 
     return result
+
+
+def _run_version_suppression(profile: BSPProfile) -> None:
+    """Run version-based CVE suppression if vulns_db is available.
+
+    Non-blocking: all errors become warnings.
+    """
+    try:
+        from discovery.bsp._version_suppression import (
+            check_version_suppression,
+            parse_kernel_version,
+        )
+        from discovery.bsp._vulns_db import load_vulns_db
+
+        vulns_db = load_vulns_db()
+        if vulns_db is None:
+            return
+
+        branch, version = parse_kernel_version(profile)
+        if not version:
+            return
+
+        profile.version_matches = check_version_suppression(profile, vulns_db)
+        profile.kernel_version_detected = version
+        profile.kernel_branch_detected = branch
+    except Exception as e:
+        logger.warning("Version suppression failed (non-blocking): %s", e)

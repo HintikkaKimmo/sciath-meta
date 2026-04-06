@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Machine-aware recipe parsing** — static regex parser for .bb/.bbappend files handles SRC_URI assignment variants including machine-conditional overrides (SRC_URI:append:MACHINE).
 - **Vendor profile system** — JSON-based vendor detection with profiles for Raspberry Pi, Toradex, NXP i.MX, PHYTEC, and a generic fallback.
 - **Confidence-rated patch metadata** — PatchInfo includes high/medium/low confidence based on CVE tag presence, with defined consumer behavior spec.
+- **Version-based CVE suppression** — cross-references BSP kernel version against vulns.git database to identify which CVEs are already fixed by the running kernel version. Produces suppressed/vulnerable/unknown status per CVE with configurable confidence levels.
+- **Kernel version extraction** — `parse_linux_version()` extracts LINUX_VERSION, PV, or filename-based version from kernel recipes without BitBake.
+- **vulns.git database parser** — parses linux kernel vulns.git repository and produces a JSON database mapping CVE IDs to fixing commits and stable kernel versions.
+- **SuppressionStatus/Confidence enums** — type-safe enums replace string literals for suppression status and confidence levels.
 
 ### Changed
 

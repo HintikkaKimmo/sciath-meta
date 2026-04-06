@@ -312,6 +312,48 @@ def gather_all_src_uris(recipe_path: Path, layer_path: Path,
     return uris
 
 
+def parse_linux_version(recipe_path: Path) -> str:
+    """Extract the kernel version from a recipe file.
+
+    Looks for (in priority order):
+    1. LINUX_VERSION = "6.1.77"
+    2. PV = "6.1.77+git${SRCPV}" → extracts "6.1.77"
+    3. Recipe filename: linux-vendor_6.1.77.bb → "6.1.77"
+
+    Returns empty string if not found.
+    """
+    text = _read_and_join(recipe_path)
+    if not text:
+        return ""
+    text = _resolve_includes(text, recipe_path)
+    text = _expand_local_vars(text)
+
+    # Try LINUX_VERSION first
+    linux_ver_re = re.compile(r'^LINUX_VERSION\s*(?:\??=|:=)\s*"([^"]*)"', re.MULTILINE)
+    match = linux_ver_re.search(text)
+    if match:
+        return match.group(1).strip()
+
+    # Try PV
+    pv_re = re.compile(r'^PV\s*(?:\??=|:=)\s*"([^"]*)"', re.MULTILINE)
+    match = pv_re.search(text)
+    if match:
+        pv = match.group(1).strip()
+        # Strip +git${SRCPV} or similar suffixes
+        pv = re.sub(r"\+.*$", "", pv)
+        if re.match(r"\d+\.\d+", pv):
+            return pv
+
+    # Try recipe filename: linux-vendor_6.1.77.bb → 6.1.77
+    stem = recipe_path.stem  # linux-raspberrypi_6.1
+    if "_" in stem:
+        version_part = stem.split("_", 1)[1]
+        if re.match(r"\d+\.\d+", version_part):
+            return version_part
+
+    return ""
+
+
 def has_cve_tag(patch_path: Path) -> bool:
     """Check if a patch file has CVE references in its filename or header."""
     if _CVE_FILENAME_RE.search(patch_path.name):

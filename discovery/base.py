@@ -84,6 +84,10 @@ class ArtifactBundle:
                 f"{self.bsp_profile.file_patch_count} file, "
                 f"{self.bsp_profile.fork_patch_count} fork)"
             )
+        if self.bsp_profile and self.bsp_profile.suppressed_cves:
+            parts.append(
+                f"{len(self.bsp_profile.suppressed_cves)} CVEs suppressed by BSP version"
+            )
         if not parts:
             return "No artifacts found"
         return f"Found: {', '.join(parts)} [{self.build_system}]"
