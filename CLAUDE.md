@@ -109,20 +109,24 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
+from discovery.bsp._types import BSPProfile
+
 @dataclass
 class ArtifactBundle:
     sbom: Optional[Path] = None
-    sbom_format: str = ""
+    sbom_format: str = ""           # "spdx", "cyclonedx", "yocto-manifest"
     kconfig: Optional[Path] = None
     dtb: list[Path] = field(default_factory=list)
     busybox_config: Optional[Path] = None
     packageconfigs: dict[str, list[str]] = field(default_factory=dict)
+    packageconfig_suppressions: dict[str, list[str]] = field(default_factory=dict)
     yocto_machine: str = ""
     yocto_distro: str = ""
     kernel_version: str = ""
     build_system: str = ""
-    metadata: dict = field(default_factory=dict)
-    schema_version: str = "1.0"
+    bsp_profile: Optional[BSPProfile] = None
+    schema_version: str = "1.2"
+    metadata: dict[str, str] = field(default_factory=dict)
 
 class BuildSystemDiscovery(ABC):
     @abstractmethod
@@ -133,6 +137,26 @@ class BuildSystemDiscovery(ABC):
     def collect(self, build_dir: Path) -> ArtifactBundle:
         """Collect all scannable artifacts from the build tree."""
 ```
+
+### Scan API bridge (discovery/submit.py)
+
+`bundle_to_payload(bundle, project_id, version_label)` converts an ArtifactBundle
+into the dict format expected by `SciathAPI.create_scan()`. It:
+- Reads artifact files from bundle paths
+- Normalizes SBOM format strings
+- Serializes PACKAGECONFIG suppressions into `custom_filter_raw` rules
+- Serializes BSP version-based suppressions (from vulns.git) into `custom_filter_raw`
+- Generates deterministic idempotency keys
+- Respects `policy_name` mutual exclusion with `custom_filter_raw`
+
+### BSP discovery (discovery/bsp/)
+
+Analyses vendor BSP layers without BitBake:
+- **Vendor adapters** for Raspberry Pi, Toradex, NXP, PHYTEC (+ generic fallback)
+- **Static recipe parsing** of `.bb`/`.bbappend` files (SRC_URI, SRCREV, LINUX_VERSION)
+- **Kernel fork detection** distinguishes vendor forks from upstream stable
+- **Version-based CVE suppression** cross-references BSP kernel version against
+  vulns.git database. Produces `VersionMatch` objects with SUPPRESSED/VULNERABLE status.
 
 **Path safety:** `collect()` must validate that `build_dir` is an absolute path
 and all discovered files are within it. No traversal outside the build directory.
