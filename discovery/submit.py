@@ -83,6 +83,12 @@ def bundle_to_payload(
     if bundle.kernel_version:
         payload["kernel_version"] = bundle.kernel_version
 
+    # Dedicated fields for server-side filter layers
+    if bundle.packageconfigs:
+        payload["extracted_packageconfigs"] = bundle.packageconfigs
+    if bundle.bsp_profile and bundle.bsp_profile.suppressed_cves:
+        payload["bsp_suppressed_cves"] = sorted(bundle.bsp_profile.suppressed_cves)
+
     return payload
 
 
