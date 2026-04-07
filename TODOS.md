@@ -31,6 +31,33 @@ overlays on top of BSPs. Getting priority ordering wrong could cause false suppr
 
 **Depends on:** BSP layer resolver v1 shipped and validated.
 
+## Curated mitigation database (replaces fingerprinting)
+
+**What:** Build a customer-contributed mitigation database where verified CVE
+mitigations compound across all users on the same BSP vendor/version. When one
+customer verifies a CVE is mitigated (patch, config, not-applicable), that
+suppression applies to every other customer on the same BSP.
+
+**Why:** Version suppression alone gives 27-38% on-branch suppression. Vigiles
+beats this with years of manual CVE-to-patch curation. Instead of building an
+automated fingerprinter (narrow, only handles single-commit kernel patches), build
+a product feature where customer-verified mitigations compound.
+
+**Data model:** (BSP vendor, kernel version range, CVE ID, mitigation type,
+evidence, confidence, source customer/anonymous). Mitigation types: patch verified,
+config mitigation, vendor advisory, not-applicable-with-rationale.
+
+**Integration:** Plugs directly into VEX export (CRA requirement). Each mitigation
+is a VEX justification. The curated DB becomes the suppression layer between
+version suppression and the final action items list.
+
+**Context:** This replaces the deferred file-patch fingerprinting (git patch-id)
+from the original sprint plan. The fingerprinter only handles one mitigation type.
+The curated DB handles all types and creates a data moat that compounds with
+customer count. Identified 2026-04-07 as the competitive response to Vigiles.
+
+**Depends on:** Week 4 scan pipeline integration. VEX model in sciath backend.
+
 ## DBOS pipeline for automated BSP re-ingestion
 
 **What:** Set up DBOS jobs that watch public BSP layer repos (meta-raspberrypi,
