@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Scan API payload bridge** — `bundle_to_payload()` converts ArtifactBundle to the dict format expected by the scan creation API. Reads artifact files, serializes PACKAGECONFIG and BSP version suppressions into custom_filter_raw rules, generates idempotency keys. This is the missing link between discovery and the CLI's `--auto-discover` flag.
 - **BSP layer patch discovery** — VendorAdapter pattern for extracting kernel patches from vendor BSP layers. Supports file patches (Raspberry Pi), forked kernel repos (Toradex, NXP), and hybrid (PHYTEC). Static analysis only, no BitBake environment required.
 - **Machine-aware recipe parsing** — static regex parser for .bb/.bbappend files handles SRC_URI assignment variants including machine-conditional overrides (SRC_URI:append:MACHINE).
 - **Vendor profile system** — JSON-based vendor detection with profiles for Raspberry Pi, Toradex, NXP i.MX, PHYTEC, and a generic fallback.

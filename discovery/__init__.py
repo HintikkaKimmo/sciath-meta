@@ -8,8 +8,9 @@ Each build system implements BuildSystemDiscovery ABC.
 __version__ = "0.1.0"
 
 from discovery.base import ArtifactBundle, BuildSystemDiscovery
+from discovery.submit import bundle_to_payload
 
-__all__ = ["ArtifactBundle", "BuildSystemDiscovery", "auto_discover"]
+__all__ = ["ArtifactBundle", "BuildSystemDiscovery", "auto_discover", "bundle_to_payload"]
 
 
 def auto_discover(build_dir: str, build_system: str = "") -> ArtifactBundle:
