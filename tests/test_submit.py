@@ -176,17 +176,20 @@ class TestPackageConfigSuppression:
 
         assert "custom_filter_raw" in payload
         doc = json.loads(payload["custom_filter_raw"])
-        assert doc["schema_version"] == "1.0"
-        assert doc["source"] == "sciath-meta-discovery"
-        assert doc["build_system"] == "yocto"
+        assert doc["version"] == "1"
+        assert "yocto" in doc["description"]
         assert len(doc["rules"]) == 3
 
-        cve_ids = {r["cve_id"] for r in doc["rules"]}
+        cve_ids = {r["match"]["value"] for r in doc["rules"]}
         assert cve_ids == {"CVE-2023-0001", "CVE-2023-0002", "CVE-2023-1000"}
 
         for rule in doc["rules"]:
-            assert rule["type"] == "packageconfig"
-            assert rule["confidence"] == "medium"
+            assert rule["match"]["type"] == "exact_cve"
+            assert rule["result"]["status"] == "not_affected"
+            assert rule["result"]["justification_category"] == "requires_configuration"
+            assert rule["result"]["confidence"] == "medium"
+            assert len(rule["result"]["justification_text"]) >= 20
+            assert rule["id"].startswith("pkgcfg-")
 
     def test_no_suppressions_no_custom_filter(self, tmp_sbom: Path) -> None:
         bundle = ArtifactBundle(sbom=tmp_sbom, sbom_format="spdx")
@@ -242,18 +245,18 @@ class TestBspVersionSuppression:
 
         # Only SUPPRESSED matches become rules (not VULNERABLE)
         assert len(rules) == 2
-        cve_ids = {r["cve_id"] for r in rules}
+        cve_ids = {r["match"]["value"] for r in rules}
         assert cve_ids == {"CVE-2024-1001", "CVE-2024-3003"}
 
         # Check rule structure
-        r1 = next(r for r in rules if r["cve_id"] == "CVE-2024-1001")
-        assert r1["type"] == "bsp_version"
-        assert r1["confidence"] == "high"
-        assert r1["source"] == "vulns-git"
-        assert "6.1.75" in r1["justification"]
-        assert "6.1.77" in r1["justification"]
-        assert r1["fixed_in"] == "6.1.75"
-        assert r1["bsp_version"] == "6.1.77"
+        r1 = next(r for r in rules if r["match"]["value"] == "CVE-2024-1001")
+        assert r1["match"]["type"] == "exact_cve"
+        assert r1["result"]["confidence"] == "high"
+        assert r1["result"]["justification_category"] == "patched_backport"
+        assert r1["result"]["status"] == "not_affected"
+        assert "6.1.75" in r1["result"]["justification_text"]
+        assert "6.1.77" in r1["result"]["justification_text"]
+        assert r1["id"].startswith("bsp-ver-")
 
     def test_mixed_packageconfig_and_bsp(self, tmp_sbom: Path) -> None:
         profile = BSPProfile(
@@ -282,8 +285,9 @@ class TestBspVersionSuppression:
         rules = doc["rules"]
         assert len(rules) == 2
 
-        types = {r["type"] for r in rules}
-        assert types == {"packageconfig", "bsp_version"}
+        # All use exact_cve match but different justification categories
+        categories = {r["result"]["justification_category"] for r in rules}
+        assert categories == {"requires_configuration", "patched_backport"}
 
 
 class TestEdgeCases:
