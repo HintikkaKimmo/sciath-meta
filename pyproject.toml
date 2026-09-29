@@ -3,7 +3,8 @@ name = "sciath-meta"
 dynamic = ["version"]
 description = "Build system integration plugins for Sciath CRA compliance automation"
 readme = "README.md"
-license = "MIT"
+license = "LicenseRef-PolyForm-Shield-1.0.0"
+license-files = ["LICENSE.md", "NOTICE"]
 requires-python = ">=3.11"
 authors = [
     {name = "Sciath", email = "support@sciath.co"},
@@ -11,7 +12,6 @@ authors = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -38,7 +38,7 @@ dev = [
 ]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [tool.hatch.version]
